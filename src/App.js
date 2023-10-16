@@ -1,23 +1,51 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import { getUsers } from './Api.js';
+import Users from "./Users"
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 
 function App() {
+  const [users, setUsers] = useState(null);
+  const [isLoading, setLoading] = useState(true);
+
+  const client = new ApolloClient({
+    uri: 'https://users-messages-gql.herokuapp.com/graphql',
+    cache: new InMemoryCache(),
+  });
+
+  client
+  .query({
+    query: gql`
+      query getUsers {
+        users {
+          username
+        }
+      }
+    `,
+  })
+  .then((result) => console.log("APOLLO RESULT", result));
+
+  useEffect(() => {
+    async function fetchUsers() {
+      console.log("fetchUsers");
+      const users = await getUsers();
+
+      setLoading(false);
+      setUsers(users);
+    }
+
+    fetchUsers();
+  }, [])
+
+  if(isLoading){
+    return(
+      <p>LOADING...</p>
+    )
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Users users={users} />
     </div>
   );
 }
