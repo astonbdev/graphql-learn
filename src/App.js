@@ -8,6 +8,7 @@ function App() {
   const [users, setUsers] = useState(null);
   const [isLoading, setLoading] = useState(true);
 
+  //Demo the ApolloClient to pull data from a graphql server
   const client = new ApolloClient({
     uri: 'https://users-messages-gql.herokuapp.com/graphql',
     cache: new InMemoryCache(),
